@@ -26,4 +26,8 @@ public class API_Keys {
     public void prePersist() {
         createdAt = LocalDateTime.now();
     }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
 }
