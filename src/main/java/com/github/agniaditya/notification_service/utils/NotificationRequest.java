@@ -1,6 +1,6 @@
 package com.github.agniaditya.notification_service.utils;
 
-public class MessageRequest {
+public class NotificationRequest {
     private String content;
     private String channel;
     private String recipient;
