@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
-public class Notifications {
+public class NotificationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -15,7 +15,7 @@ public class Notifications {
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
-    private API_Keys client;
+    private ApiKeyEntity client;
 
     @Column(name = "recipient", nullable = false)
     private String recipient;

@@ -10,7 +10,7 @@ import java.security.MessageDigest;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class GenerateHashKey {
+public class GenerateHashKeyService {
 
     @Autowired
     private RedisTemplate<String,String> redisTemplate;

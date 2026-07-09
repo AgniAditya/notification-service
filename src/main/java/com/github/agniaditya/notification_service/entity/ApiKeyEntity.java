@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "api_keys")
-public class API_Keys {
+public class ApiKeyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
