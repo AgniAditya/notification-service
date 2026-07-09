@@ -1,18 +1,13 @@
 package com.github.agniaditya.notification_service.controllers;
 
-import com.github.agniaditya.notification_service.services.ApiKeyRateLimitService;
-import com.github.agniaditya.notification_service.services.ApiKeyValidationService;
-import com.github.agniaditya.notification_service.services.IdempotencyKeyService;
-import com.github.agniaditya.notification_service.services.IpRateLimitService;
+import com.github.agniaditya.notification_service.services.*;
+import com.github.agniaditya.notification_service.utils.ApiKeyRequest;
 import com.github.agniaditya.notification_service.utils.ApiResponse;
-import com.github.agniaditya.notification_service.utils.MessageRequest;
+import com.github.agniaditya.notification_service.utils.NotificationRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api_v1")
@@ -33,7 +28,7 @@ public class notify {
     @PostMapping("/notify")
     public ApiResponse sendNotification(HttpServletRequest req,
                                     HttpServletResponse res,
-                                    @RequestBody MessageRequest data){
+                                    @RequestBody NotificationRequest data){
         // 1. Ip based rate limiting.
         String ip = req.getRemoteAddr();
         if(ip.isEmpty()){
@@ -87,9 +82,45 @@ public class notify {
                     "429");
         }
 
+        System.out.println(data.getContent());
+        System.out.println(data.getChannel());
+        System.out.println(data.getRecipient());
+
         return new ApiResponse(
                 true,
                 "notification send successfully",
                 "200");
+    }
+
+    @Autowired
+    private GenerateHashKey generateHashKey;
+
+    @GetMapping("/api_key")
+    public ApiResponse generateApiKey(@RequestBody ApiKeyRequest data){
+        String clientName = data.getClientName().trim();
+        String projectName = data.getProjectName().trim();
+        if(clientName.isEmpty() || projectName.isEmpty()){
+            return new ApiResponse(
+                    false,
+                    "client and project name is required",
+                    "400"
+            );
+        }
+
+        String generatedKey = generateHashKey.hashKey(clientName,projectName);
+        if(generatedKey == null){
+            return new ApiResponse(
+                    false,
+                    "failed to generate api key. TRY AGAIN!",
+                    "500"
+            );
+        }
+
+        return new ApiResponse(
+                true,
+                "api key generated successfully",
+                "200",
+                generatedKey
+        );
     }
 }
