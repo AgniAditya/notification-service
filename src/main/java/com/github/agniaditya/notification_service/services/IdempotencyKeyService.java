@@ -1,6 +1,6 @@
 package com.github.agniaditya.notification_service.services;
 
-import com.github.agniaditya.notification_service.entity.NotificationEntity;
+import com.github.agniaditya.notification_service.entity.Notification;
 import com.github.agniaditya.notification_service.repository.NotificationRepository;
 import com.github.agniaditya.notification_service.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class IdempotencyKeyService {
             return true;
         }
 
-        Optional<NotificationEntity> exist = notificationRepository.findByIdempotencyKey(idempotency_key);
+        Optional<Notification> exist = notificationRepository.findByIdempotencyKey(idempotency_key);
         if(exist.isEmpty()){
             return false;
         }

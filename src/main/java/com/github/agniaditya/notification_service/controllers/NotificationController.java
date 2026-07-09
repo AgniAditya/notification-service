@@ -1,7 +1,10 @@
 package com.github.agniaditya.notification_service.controllers;
 
+import com.github.agniaditya.notification_service.entity.ApiKey;
+import com.github.agniaditya.notification_service.entity.Notification;
+import com.github.agniaditya.notification_service.repository.ApiKeyRepository;
+import com.github.agniaditya.notification_service.repository.NotificationRepository;
 import com.github.agniaditya.notification_service.services.*;
-import com.github.agniaditya.notification_service.utils.ApiKeyRequest;
 import com.github.agniaditya.notification_service.utils.ApiResponse;
 import com.github.agniaditya.notification_service.utils.NotificationRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/notifications")
+@RequestMapping("/api/v1/notification")
 public class NotificationController {
 
     @Autowired
@@ -23,6 +26,12 @@ public class NotificationController {
 
     @Autowired
     private ApiKeyRateLimitService apiKeyRateLimitService;
+
+    @Autowired
+    private ApiKeyRepository apiKeyRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @PostMapping
     public ApiResponse sendNotification(HttpServletRequest req,
@@ -43,14 +52,14 @@ public class NotificationController {
         }
 
         // 2. Validate API Key.
-        String api_key = req.getHeader("notify-api-key");
-        if(api_key == null || api_key.isEmpty()){
+        String apiKey = req.getHeader("notify-api-key");
+        if(apiKey == null || apiKey.isEmpty()){
             return new ApiResponse(
                     false,
                     "API key not found",
                     "404");
         }
-        if(!apiKeyValidation.isValid(api_key)){
+        if(!apiKeyValidation.isValid(apiKey)){
             return new ApiResponse(
                     false,
                     "Not a valid API key",
@@ -58,14 +67,14 @@ public class NotificationController {
         }
 
         // Step 3 - Idempotency Check
-        String idempotency_key = req.getHeader("notify-idempotency-key");
-        if(idempotency_key == null || idempotency_key.isEmpty()){
+        String idempotencyKey = req.getHeader("notify-idempotency-key");
+        if(idempotencyKey == null || idempotencyKey.isEmpty()){
             return new ApiResponse(
                     false,
                     "Idempotency key not found",
                     "404");
         }
-        if(idempotencyKeyService.isExist(idempotency_key)){
+        if(idempotencyKeyService.isExist(idempotencyKey)){
             return new ApiResponse(
                     false,
                     "duplicate request, Idempotency key should be unique for each request",
@@ -73,17 +82,29 @@ public class NotificationController {
         }
 
         // Step 4 - API key based rate limiting
-        if(!apiKeyRateLimitService.isAllowed(api_key)){
+        if(!apiKeyRateLimitService.isAllowed(apiKey)){
             return new ApiResponse(
                     false,
                     "Too many requests",
                     "429");
         }
 
-        System.out.println(data.getContent());
-        System.out.println(data.getChannel());
-        System.out.println(data.getRecipient());
+        // Step 5 - Write Notification to DB
+        ApiKey client = apiKeyRepository
+                .findByKeyHash(apiKey)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
 
+        Notification notification = new Notification();
+        notification.setClientId(client);
+        notification.setRecipient(data.getRecipient());
+        notification.setChannel(data.getChannel());
+        notification.setContent(data.getContent());
+        notification.setIdempotencyKey(idempotencyKey);
+
+        notificationRepository.save(notification);
+        System.out.println("Notification created...");
+
+        // Step 6 - Return HTTP 202 ACCEPTED
         return new ApiResponse(
                 true,
                 "notification send successfully",

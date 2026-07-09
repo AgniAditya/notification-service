@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "api_keys")
-public class ApiKeyEntity {
+public class ApiKey {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -25,6 +25,15 @@ public class ApiKeyEntity {
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
+    }
+
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
+    public void setKeyHash(String keyHash) {
+        this.keyHash = keyHash;
     }
 
     public Boolean getIsActive() {

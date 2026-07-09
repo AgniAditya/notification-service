@@ -1,8 +1,10 @@
 package com.github.agniaditya.notification_service.utils;
 
+import com.github.agniaditya.notification_service.enums.Channels;
+
 public class NotificationRequest {
     private String content;
-    private String channel;
+    private Channels channel;
     private String recipient;
 
     // Getters and Setters
@@ -14,11 +16,11 @@ public class NotificationRequest {
         this.content = content;
     }
 
-    public String getChannel() {
+    public Channels getChannel() {
         return channel;
     }
 
-    public void setChannel(String channel) {
+    public void setChannel(Channels channel) {
         this.channel = channel;
     }
 

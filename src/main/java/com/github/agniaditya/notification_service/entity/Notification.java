@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
-public class NotificationEntity {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -15,7 +15,7 @@ public class NotificationEntity {
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
-    private ApiKeyEntity client;
+    private ApiKey clientId;
 
     @Column(name = "recipient", nullable = false)
     private String recipient;
@@ -41,7 +41,7 @@ public class NotificationEntity {
     private String failureReason = null;
 
     @Column(name = "delivered_at")
-    private LocalDateTime deliveredAt;
+    private LocalDateTime deliveredAt = null;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -49,5 +49,41 @@ public class NotificationEntity {
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
+    }
+
+    public void setClientId(ApiKey clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setChannel(Channels channel) {
+        this.channel = channel;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
+
+    public void setDeliveredAt(LocalDateTime deliveredAt) {
+        this.deliveredAt = deliveredAt;
     }
 }
