@@ -5,7 +5,9 @@ import com.github.agniaditya.notification_service.entity.Notification;
 import com.github.agniaditya.notification_service.repository.ApiKeyRepository;
 import com.github.agniaditya.notification_service.repository.NotificationRepository;
 import com.github.agniaditya.notification_service.services.*;
+import com.github.agniaditya.notification_service.services.kafka.NotificationProducer;
 import com.github.agniaditya.notification_service.utils.ApiResponse;
+import com.github.agniaditya.notification_service.utils.NotificationEvent;
 import com.github.agniaditya.notification_service.utils.NotificationRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class NotificationController {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private NotificationProducer notificationProducer;
 
     @PostMapping
     public ApiResponse sendNotification(HttpServletRequest req,
@@ -101,10 +106,21 @@ public class NotificationController {
         notification.setContent(data.getContent());
         notification.setIdempotencyKey(idempotencyKey);
 
-        notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
         System.out.println("Notification created...");
 
-        // Step 6 - Return HTTP 202 ACCEPTED
+        // Step 6 - Publish to Kafka topic
+        NotificationEvent event = new NotificationEvent(
+                saved.getId(),
+                saved.getContent(),
+                saved.getRecipient(),
+                saved.getChannel(),
+                saved.getRetryCount()
+        );
+
+        notificationProducer.route(event);
+
+        // Step 7 - Return HTTP 202 ACCEPTED
         return new ApiResponse(
                 true,
                 "notification send successfully",
