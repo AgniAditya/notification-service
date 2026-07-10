@@ -86,4 +86,48 @@ public class Notification {
     public void setDeliveredAt(LocalDateTime deliveredAt) {
         this.deliveredAt = deliveredAt;
     }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public ApiKey getClientId() {
+        return clientId;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public Channels getChannel() {
+        return channel;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public Integer getRetryCount() {
+        return retryCount;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public LocalDateTime getDeliveredAt() {
+        return deliveredAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }
