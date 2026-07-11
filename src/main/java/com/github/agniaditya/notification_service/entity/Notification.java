@@ -24,7 +24,7 @@ public class Notification {
     @Column(name = "channel", nullable = false)
     private Channels channel;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -37,7 +37,7 @@ public class Notification {
     @Column(name = "retry_count", nullable = false)
     private Integer retryCount = 0;
 
-    @Column(name = "failure_reason")
+    @Column(name = "failure_reason", columnDefinition = "TEXT")
     private String failureReason = null;
 
     @Column(name = "delivered_at")
