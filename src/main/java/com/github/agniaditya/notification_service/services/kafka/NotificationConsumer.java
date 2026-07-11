@@ -9,16 +9,16 @@ public class NotificationConsumer {
 
     @KafkaListener(topics = "notifications.mail", groupId = "email-group")
     public void handleEmail(NotificationEvent event){
-        System.out.println("Processing Email Event is: " + event);
+        System.out.println("Processing Email Event is: " + event.recipient());
     }
 
     @KafkaListener(topics = "notifications.sms", groupId = "sms-group")
     public void handleSms(NotificationEvent event){
-        System.out.println("Processing SMS Event is: " + event);
+        System.out.println("Processing SMS Event is: " + event.recipient());
     }
 
     @KafkaListener(topics = "notifications.push", groupId = "push-group")
     public void handlePush(NotificationEvent event){
-        System.out.println("Processing Push Event is: " + event);
+        System.out.println("Processing Push Event is: " + event.recipient());
     }
 }
