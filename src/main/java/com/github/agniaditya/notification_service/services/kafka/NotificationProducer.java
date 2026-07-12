@@ -32,4 +32,8 @@ public class NotificationProducer {
             default -> throw new RuntimeException("Unknown channel: " + event.channel());
         }
     }
+
+    public void snedToDead(NotificationEvent event){
+        kafkaTemplate.send("notifications.dead", event);
+    }
 }

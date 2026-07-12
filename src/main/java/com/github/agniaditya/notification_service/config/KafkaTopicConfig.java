@@ -21,4 +21,9 @@ public class KafkaTopicConfig {
     public NewTopic pushTopic(){
         return new NewTopic("notifications.push", 1, (short) 1);
     }
+
+    @Bean
+    public NewTopic deadLetterTopic(){
+        return new NewTopic("notifications.dead", 1, (short) 1);
+    }
 }

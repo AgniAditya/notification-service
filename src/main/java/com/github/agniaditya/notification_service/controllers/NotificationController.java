@@ -110,6 +110,10 @@ public class NotificationController {
         System.out.println("Notification created...");
 
         // Step 6 - Publish to Kafka topic
+//        String channel = data.getChannel();
+//        if(){
+//
+//        }
         NotificationEvent event = new NotificationEvent(
                 saved.getId(),
                 saved.getContent(),
